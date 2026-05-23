@@ -289,21 +289,7 @@ with mlflow.start_run():
     # LOG MODEL TO MLflow
     # ==========================
 
-    # Infer model signature
-    signature = infer_signature(
-    Xtrain,
-    best_model.predict(Xtrain)
-    )
-
-    # Log model to MLflow
-    mlflow.sklearn.log_model(
-    sk_model=best_model,
-    name="xgboost_model",
-    signature=signature,
-    input_example=Xtrain.iloc[:5]
-    )
-
-    print("\nModel logged to MLflow.")
+    print("\nModel training and metrics logged successfully.")
 
     # ==========================
     # HUGGING FACE MODEL REGISTRY
