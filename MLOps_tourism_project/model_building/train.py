@@ -26,6 +26,23 @@ from huggingface_hub import login, HfApi, create_repo
 from huggingface_hub.utils import RepositoryNotFoundError, HfHubHTTPError
 from mlflow.models.signature import infer_signature
 
+# MLflow tracking setup
+
+if os.getenv("GITHUB_ACTIONS"):
+    # GitHub Actions → local tracking
+    mlflow.set_tracking_uri("file:./mlruns")
+
+else:
+    # Colab/local development → remote MLflow UI
+    mlflow.set_tracking_uri(
+        "https://apple-snowfall-juncture.ngrok-free.dev"
+    )
+
+# Set experiment
+mlflow.set_experiment(
+    "MLOps_Tourism_Prediction"
+)
+
 api = HfApi()
 
 Xtrain_path = "hf://datasets/rashmipr/tourism-project/Xtrain.csv"
@@ -81,6 +98,9 @@ param_grid = {
 
 # Model pipeline
 model_pipeline = make_pipeline(preprocessor, xgb_model)
+
+if os.getenv("GITHUB_ACTIONS"):
+    mlflow.set_tracking_uri("file:./mlruns")
 
 # Start MLflow run
 with mlflow.start_run():
