@@ -27,7 +27,6 @@ from huggingface_hub.utils import RepositoryNotFoundError, HfHubHTTPError
 from mlflow.models.signature import infer_signature
 
 # MLflow tracking setup
-
 mlflow.set_tracking_uri("file:./mlruns")
 
 # Set experiment
