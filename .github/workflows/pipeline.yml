@@ -8,42 +8,103 @@ on:
 
 jobs:
 
-  build-model-deploy:
+  register-dataset:
+    name: Register Dataset
     runs-on: ubuntu-latest
 
     steps:
 
-      # Step 1: Checkout repository
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # Step 2: Set up Python
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: 3.11
 
-      # Step 3: Install dependencies
       - name: Install Dependencies
         run: |
           pip install -r MLOps_tourism_project/deployment/requirements.txt
 
-      # Step 4: Run Data Preparation
+      - name: Upload Dataset to Hugging Face
+        env:
+          MY_MLOps_Token: ${{ secrets.MY_MLOPS_TOKEN }}
+        run: |
+          python MLOps_tourism_project/model_building/data_register.py
+
+
+  data-preparation:
+    name: Data Preparation
+    needs: register-dataset
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+
+      - name: Install Dependencies
+        run: |
+          pip install -r MLOps_tourism_project/deployment/requirements.txt
+
       - name: Run Data Preparation
         env:
           MY_MLOps_Token: ${{ secrets.MY_MLOPS_TOKEN }}
         run: |
           python MLOps_tourism_project/model_building/prep.py
 
-      # Step 5: Run Model Training
+
+  model-training:
+    name: Model Training
+    needs: data-preparation
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+
+      - name: Install Dependencies
+        run: |
+          pip install -r MLOps_tourism_project/deployment/requirements.txt
+
       - name: Run Model Training
         env:
           MY_MLOps_Token: ${{ secrets.MY_MLOPS_TOKEN }}
         run: |
           python MLOps_tourism_project/model_building/train.py
 
-      # Step 6: Upload deployment files to Hugging Face Space
-      - name: Deploy Streamlit App
+
+  deploy-hosting:
+    name: Deploy Streamlit App
+    needs: model-training
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+
+      - name: Install Dependencies
+        run: |
+          pip install -r MLOps_tourism_project/deployment/requirements.txt
+
+      - name: Deploy Streamlit App to Hugging Face
         env:
           MY_MLOps_Token: ${{ secrets.MY_MLOPS_TOKEN }}
         run: |
