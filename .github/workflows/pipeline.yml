@@ -87,6 +87,12 @@ jobs:
         run: |
           python MLOps_tourism_project/model_building/train.py
 
+      - name: Upload MLflow Logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: mlflow-runs
+          path: mlruns/
+
 
   deploy-hosting:
     name: Deploy Streamlit App
